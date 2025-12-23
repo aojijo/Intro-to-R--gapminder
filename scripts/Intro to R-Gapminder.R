@@ -537,3 +537,4 @@ gdp_pop_bycontinents_byyear_above25 <- gapminder %>%
    arrange(desc(mean_lifeExp))
  lifeExp_2countries_bycontinents
  
+ 
