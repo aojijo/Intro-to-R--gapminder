@@ -325,3 +325,215 @@ gapminder[,c(1:4)]
 gapminder.small <- gapminder[(1:23),]
 gapminder.small <- gapminder.small[-c(10:18), ]
 # Control Flow
+if(any(gapminder$year==2002)){print("Got it")}
+ifelse(gapminder$year==2002,"Got it", "")
+for (i in 1:6) { print(i)}
+for (c in 1:10) { print(c)}
+for (i in 1:8) {
+  for( b in 6:10){
+  print(paste(i,b))}}
+test_loop <- c()
+for (i in 1:8) {
+  for( b in 6:10){
+   test_output <- paste(i,b)
+    test_loop <- c(test_loop,test_output)}}
+test_loop
+
+test_matrix <- matrix(nrow=5, ncol=5)
+jv <- c(1:5) 
+for (i in 1:5) {
+for (k in 1:5){
+  temp_jv <- jv[k]
+  temp_output <- paste(i,temp_jv)
+  test_matrix[i,k] <- temp_output
+}} 
+
+test_matrix
+typeof(gapminder$year)
+?unique
+unique(gapminder$year)
+unique(gapminder$continent)
+
+for (iContinent in unique(gapminder$continent)) {
+  tmp <- gapminder[gapminder$continent == iContinent, ]
+  cat(iContinent, mean(tmp$lifeExp, na.rm = TRUE), "\n")}
+ls()
+gapminder <- read.csv("data/gapminder_data.csv")
+unique(gapminder$lifeExp)
+tmp <- gapminder[gapminder$continent == "Africa", ]
+mean(tmp$lifeExp, na.rm = TRUE)
+tv <- 50
+for(iContinent in unique(gapminder$continent)){
+  tmp <- mean(gapminder[gapminder$continent==iContinent, "lifeExp"])
+if (tmp < tv){ cat("Average life expectancy in", iContinent, "is lesser than", tv,"\n")}
+  else{ cat("Average life exp in", iContinent, "is greater than", tv,"\n")}
+  }
+tmp
+tmp
+grep("^B", unique(gapminder$country), value = TRUE)
+grep("^B", unique(gapminder$country))
+# creating publication
+ggplot(data=gapminder)
+head(gapminder)
+ggplot(data = gapminder,mapping = aes(x=year,y=lifeExp, color=continent,group=country)) +geom_line()
+ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp)) + geom_point(alpha = 0.5) + scale_x_log10()
+ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp)) +geom_point(alpha = 0.5) + scale_x_log10() + geom_smooth(method="lm", linewidth=1.5)
+ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = continent)) +
+  geom_point(size=3, shape=17) + scale_x_log10() +
+  geom_smooth(method="lm", linewidth=1.5)
+
+americas <- gapminder[gapminder$continent == "Americas",]
+ggplot(data = americas, mapping = aes(x = year, y = lifeExp)) +
+  geom_line() +
+  facet_wrap( ~ country) +
+  theme(axis.text.x = element_text(angle = 45))
+
+ggplot(data = gapminder, mapping = aes(x = continent, y = lifeExp, fill = continent)) +
+  geom_boxplot() + facet_wrap(~year) +
+  ylab("Life Expectancy") +
+  theme(axis.title.x=element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+
+lifeExp_plot <- ggplot(data = americas, mapping = aes(x = year, y = lifeExp, color=continent)) +
+  geom_line() + facet_wrap( ~ country) +
+  labs(
+    x = "Year",              # x axis title
+    y = "Life expectancy",   # y axis title
+    title = "Figure 1",      # main title of figure
+    color = "Continent"      # title of legend
+  ) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+ggsave(filename = "output/lifeExp.png", plot = lifeExp_plot, width = 12, height = 10, dpi = 300, units = "cm")
+getwd()
+
+#Vectorization
+gapminder$popinmillions <- gapminder$pop / 1e6
+head(gapminder)
+ggplot(data=gapminder, aes(x=year, y=popinmillions))+ geom_point()
+ggplot(gapminder, aes(x = year, y = popinmillions)) +
+  geom_point()
+m <- matrix(1:12, nrow=4, ncol=3)
+m
+m^-1
+m* c(1,0,-1)
+m > c(0,20)
+1/(1:100)^2
+#Functions
+#In seperate scripts
+# Writing Data
+p <- ggplot(gapminder, aes(x=year, y=lifeExp, colour=country)) + geom_line() + theme(legend.position = "none")
+pdf("LifeExp_vs_Year.pdf", width = 12, height = 4)
+?dev.off
+dev.off()
+p
+p+ facet_grid(~continent)
+dev.off()
+Aus_subset <- gapminder[gapminder$country=="Australia",]
+write.table(Aus_subset,file= "output/gapminder-aus.csv",sep=',', quote = FALSE, row.names=FALSE)
+gapminder_aus <- read.csv("output/gapminder-aus.csv")
+head(gapminder_aus)
+write.table(
+  gapminder[gapminder$year > 1990, ],
+  file = "output/gapminder-after1990.csv",
+  sep = ",", quote = FALSE, row.names = FALSE
+)
+# Data Frame Manipulation with dplyr
+mean(gapminder$gdpPercap)
+mean(gapminder$gdpPercap[gapminder$continent== "Africa"])
+install.packages('dplyr')
+smaller_gapminder_data <- select(gapminder, -continent)
+year_country_gdp <- select(gapminder, year, country, gdpPercap)
+View(year_country_gdp)
+tidy_gdp <- year_country_gdp %>% rename(gdp_per_capita = gdpPercap)
+head(tidy_gdp)
+europe_lifeExp_2007 <- gapminder %>%
+  filter(continent == "Europe", year == 2007) %>%
+  select(country, lifeExp)
+african_values <- gapminder %>% filter(continent== "Africa") %>% select(lifeExp,country,year)
+str(gapminder)
+str(gapminder %>% group_by(continent))
+continent_gdp <- gapminder %>% group_by(continent) %>% summarise(meangdp=mean(gdpPercap))
+continent_gdp
+str(continent_gdp)
+
+lifeExp_bycountry <- gapminder %>%
+  group_by(country) %>%
+  summarize(mean_lifeExp = mean(lifeExp))
+lifeExp_bycountry %>%
+  filter(mean_lifeExp == min(mean_lifeExp) | mean_lifeExp == max(mean_lifeExp))
+
+lifeExp_bycountry %>%
+  arrange(desc(country)) %>%
+  head(4)
+
+lifeExp_bycountry %>%
+  arrange(mean_lifeExp) %>%
+  head(6)
+
+gdp_bycontinents_byyear <- gapminder %>%
+  group_by(continent, year) %>%
+  summarize(mean_gdpPercap = mean(gdpPercap))
+gdp_bycontinents_byyear
+
+gdp_pop_bycontinents_byyear <- gapminder %>%
+  group_by(continent, year) %>%
+  summarize(mean_gdpPercap = mean(gdpPercap),
+            sd_gdpPercap = sd(gdpPercap),
+            mean_pop = mean(pop),
+            sd_pop = sd(pop))
+gdp_pop_bycontinents_byyear
+
+gapminder %>%
+  filter(year == 2002) %>%
+  count(continent, sort = TRUE)
+
+gapminder %>%
+  group_by(continent) %>%
+  summarize(
+    mean_le = mean(lifeExp),
+    min_le = min(lifeExp),
+    max_le = max(lifeExp),
+    se_le = sd(lifeExp)/sqrt(n()))
+
+gdp_pop_bycontinents_byyear <- gapminder %>%
+  mutate(gdp_billion = gdpPercap*pop/10^9) %>%
+  group_by(continent,year) %>%
+  summarize(mean_gdpPercap = mean(gdpPercap),
+            sd_gdpPercap = sd(gdpPercap),
+            mean_pop = mean(pop),
+            sd_pop = sd(pop),
+            mean_gdp_billion = mean(gdp_billion),
+            sd_gdp_billion = sd(gdp_billion))
+gdp_pop_bycontinents_byyear
+# Having and ifelse condition fore mutate to be used
+gdp_pop_bycontinents_byyear_above25 <- gapminder %>%
+  mutate(gdp_billion = ifelse(lifeExp > 25, gdpPercap * pop / 10^9, NA)) %>%
+  group_by(continent, year) %>%
+  summarize(mean_gdpPercap = mean(gdpPercap),
+            sd_gdpPercap = sd(gdpPercap),
+            mean_pop = mean(pop),
+            sd_pop = sd(pop),
+            mean_gdp_billion = mean(gdp_billion),
+            sd_gdp_billion = sd(gdp_billion))
+?startsWith
+#To extract countries that start with aor z
+ az <- gapminder %>%
+  mutate(startsWith = substr(country, 1, 1)) %>%
+  filter(startsWith %in% c("A", "Z")) %>%
+  ggplot(aes(x = year, y = lifeExp, colour = continent)) +
+  geom_line() +
+  facet_wrap(vars(country)) +
+  theme_minimal()
+
+ ggsave(filename = "output/AZ_extraction.png", plot = az, width = 12, height = 10, dpi = 300, units = "cm")
+ 
+ lifeExp_2countries_bycontinents <- gapminder %>%
+   filter(year==2002) %>%
+   group_by(continent) %>%
+   sample_n(2) %>%
+   summarize(mean_lifeExp=mean(lifeExp)) %>%
+   arrange(desc(mean_lifeExp))
+ lifeExp_2countries_bycontinents
+ 
